@@ -3,6 +3,7 @@ import math
 import time
 import threading
 import os
+import numpy as np
 
 from pythonosc import dispatcher
 from pythonosc import osc_server
@@ -18,15 +19,6 @@ def initArrays():
   concentrationArray = []
   lastSubmit = time.time()
   serverRunning = False
-
-def print_volume_handler(unused_addr, args, volume):
-  print("[{0}] ~ {1}".format(args[0], volume))
-
-def print_compute_handler(unused_addr, args, volume):
-  print("Ok")
-  try:
-    print("[{0}] ~ {1}".format(args[0], args[1](volume)))
-  except ValueError: pass
 
 def getAverage(*nums):
   total = 0
@@ -44,41 +36,26 @@ def arrayAverage(array):
   return total/(len(array))
 
 def alphaData(*data):
-  global alphaArray
-  alphaArray.append(getAverage(data))
-  submitData()
+  print(np.array(data))
 
 def betaData(*data):
-  global betaArray
-  betaArray.append(getAverage(data))
-  submitData()
+    print(data)
 
 def deltaData(*data):
-  global deltaArray
-  deltaArray.append(getAverage(data))
-  submitData()
+    print(data)
 
 def thetaData(*data):
-  global thetaArray
-  thetaArray.append(getAverage(data))
-  submitData()
+    print(data)
 
 def concentrationData(*data):
-  global concentrationArray
-  concentrationArray.append(getAverage(data))
-  submitData()
-
+    print(data)
+    
 def submitData():
   global lastSubmit, alphaArray, betaArray, deltaArray, thetaArray, concentrationArray
   if time.time() - lastSubmit > 3:
     lastSubmit = time.time()
     avgArray = [arrayAverage(alphaArray), arrayAverage(betaArray), arrayAverage(deltaArray), arrayAverage(thetaArray), arrayAverage(concentrationArray)]
     print(avgArray)
-    mostActiveIndex = avgArray.index(max(avgArray))
-    f = open('./file.json', 'a')
-    f.write(str(mostActiveIndex)+",")
-    f.close()
-    # print('Wrote ' + str(mostActiveIndex)) + ' to file.')
     alphaArray = []
     betaArray = []
     thetaArray = []
@@ -99,11 +76,11 @@ def runMuseServer():
   args = parser.parse_args()
 
   dispatcher = dispatcher.Dispatcher()
-  dispatcher.map("/muse/elements/alpha_relative", alphaData)
-  dispatcher.map("/muse/elements/beta_relative", betaData)
-  dispatcher.map("/muse/elements/delta_relative", deltaData)
-  dispatcher.map("/muse/elements/theta_relative", thetaData)
-  dispatcher.map("/muse/elements/jaw_clench", concentrationData)
+  dispatcher.map("/muse/elements/alpha_absolute", alphaData)
+  dispatcher.map("/muse/elements/beta_absolute", betaData)
+  dispatcher.map("/muse/elements/delta_absolute", deltaData)
+  dispatcher.map("/muse/elements/theta_absolute", thetaData)
+  dispatcher.map("/muse/elements/gamma_absolute", concentrationData)
   	
   server = osc_server.ThreadingOSCUDPServer((args.ip, args.port), dispatcher)
   print("Serving on {}".format(server.server_address))
@@ -113,3 +90,5 @@ def runMuseServer():
 
 initArrays()
 runMuseServer()
+
+
