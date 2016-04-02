@@ -15,6 +15,7 @@ def initArrays():
   global t1, t2, t3, t4
   global g1, g2, g3, g4
   global l1, l2, l3, l4
+  global c
   
   global timesCalled, lastSubmit
   timesCalled = 0
@@ -42,6 +43,7 @@ def initArrays():
   l2 = []
   l3 = []
   l4 = []
+  c = []
   lastSubmit = time.time()
   serverRunning = False
 
@@ -100,6 +102,13 @@ def lowData(*data):
   l4.append(data[4])
   submitData()
 
+def cData(*data):
+  global c
+  data = np.array(data)
+  c.append(data[1])
+  submitData()
+
+
 def submitData():
   global lastSubmit
   global a1, a2, a3, a4
@@ -108,16 +117,24 @@ def submitData():
   global t1, t2, t3, t4
   global g1, g2, g3, g4
   global l1, l2, l3, l4
+  global c
   
   if time.time() - lastSubmit > 1:
     lastSubmit = time.time()
+    alpha = [np.mean(np.array(a1).astype(np.float)), np.mean(np.array(a2).astype(np.float)), np.mean(np.array(a3).astype(np.float)), np.mean(np.array(a4).astype(np.float))]
+    beta = [np.mean(np.array(b1).astype(np.float)), np.mean(np.array(b2).astype(np.float)), np.mean(np.array(b3).astype(np.float)), np.mean(np.array(b4).astype(np.float))]
+    delta = [np.mean(np.array(d1).astype(np.float)), np.mean(np.array(d2).astype(np.float)), np.mean(np.array(d3).astype(np.float)), np.mean(np.array(d4).astype(np.float))]
+    theta = [np.mean(np.array(t1).astype(np.float)), np.mean(np.array(t2).astype(np.float)), np.mean(np.array(t3).astype(np.float)), np.mean(np.array(t4).astype(np.float))]
+    gamma = [np.mean(np.array(g1).astype(np.float)), np.mean(np.array(g2).astype(np.float)), np.mean(np.array(g3).astype(np.float)), np.mean(np.array(g4).astype(np.float))]
+    low = [np.mean(np.array(l1).astype(np.float)), np.mean(np.array(l2).astype(np.float)), np.mean(np.array(l3).astype(np.float)), np.mean(np.array(l4).astype(np.float))]
     print("Channel 1-4")
-    print("Alpha:", np.mean(np.array(a1).astype(np.float)), np.mean(np.array(a2).astype(np.float)), np.mean(np.array(a3).astype(np.float)), np.mean(np.array(a4).astype(np.float)))
-    print("Beta:", np.mean(np.array(b1).astype(np.float)), np.mean(np.array(b2).astype(np.float)), np.mean(np.array(b3).astype(np.float)), np.mean(np.array(b4).astype(np.float)))
-    print("Delta:", np.mean(np.array(d1).astype(np.float)), np.mean(np.array(d2).astype(np.float)), np.mean(np.array(d3).astype(np.float)), np.mean(np.array(d4).astype(np.float)))
-    print("Theta:", np.mean(np.array(t1).astype(np.float)), np.mean(np.array(t2).astype(np.float)), np.mean(np.array(t3).astype(np.float)), np.mean(np.array(t4).astype(np.float)))
-    print("Gamma:", np.mean(np.array(g1).astype(np.float)), np.mean(np.array(g2).astype(np.float)), np.mean(np.array(g3).astype(np.float)), np.mean(np.array(g4).astype(np.float)))
-    print("Low Freq:", np.mean(np.array(l1).astype(np.float)), np.mean(np.array(l2).astype(np.float)), np.mean(np.array(l3).astype(np.float)), np.mean(np.array(l4).astype(np.float)))
+    print("Alpha:", alpha)
+    print("Beta:", beta)
+    print("Delta:", delta)
+    print("Theta:", theta)
+    print("Gamma:", gamma)
+    print("Low Freq:", low)
+    print(np.mean(np.array(c).astype(np.float)))
     print("")
     a1 = []
     a2 = []
@@ -143,6 +160,7 @@ def submitData():
     l2 = []
     l3 = []
     l4 = []
+    c = []
 
 def endServer():
   global server
@@ -164,6 +182,7 @@ def runMuseServer():
   dispatcher.map("/muse/elements/theta_absolute", thetaData)
   dispatcher.map("/muse/elements/gamma_absolute", gammaData)
   dispatcher.map("/muse/elements/low_freqs_absolute", lowData)
+  dispatcher.map("/muse/elements/experimental/concentration", cData)
   	
   server = osc_server.ThreadingOSCUDPServer((args.ip, args.port), dispatcher)
   print("Serving on {}".format(server.server_address))
