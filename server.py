@@ -127,15 +127,16 @@ def submitData():
     theta = [np.mean(np.array(t1).astype(np.float)), np.mean(np.array(t2).astype(np.float)), np.mean(np.array(t3).astype(np.float)), np.mean(np.array(t4).astype(np.float))]
     gamma = [np.mean(np.array(g1).astype(np.float)), np.mean(np.array(g2).astype(np.float)), np.mean(np.array(g3).astype(np.float)), np.mean(np.array(g4).astype(np.float))]
     low = [np.mean(np.array(l1).astype(np.float)), np.mean(np.array(l2).astype(np.float)), np.mean(np.array(l3).astype(np.float)), np.mean(np.array(l4).astype(np.float))]
-    print("Channel 1-4")
-    print("Alpha:", alpha)
-    print("Beta:", beta)
-    print("Delta:", delta)
-    print("Theta:", theta)
-    print("Gamma:", gamma)
-    print("Low Freq:", low)
-    print(np.mean(np.array(c).astype(np.float)))
-    print("")
+    xtest = np.concatenate((low, alpha, beta, delta, theta, gamma ))
+    #print("Channel 1-4")
+    #print("Alpha:", alpha)
+    #print("Beta:", beta)
+    #print("Delta:", delta)
+    #print("Theta:", theta)
+    #print("Gamma:", gamma)
+    #print("Low Freq:", low)
+    #print()
+    #print("")
     a1 = []
     a2 = []
     a3 = []
