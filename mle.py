@@ -1,11 +1,11 @@
 import numpy as np
 from sklearn.svm import SVC
 import warnings
-from sklearn.neighbors import KNeighborsClassifier
+#from sklearn.neighbors import KNeighborsClassifier
 import win32com.client as comclt
 warnings.filterwarnings("ignore")
 trainx = np.loadtxt(open("conFort.csv","rb"),delimiter=",")
-
+wsh= comclt.Dispatch("WScript.Shell")
 l = []
 a = []
 b = []
@@ -88,8 +88,9 @@ def initArrays():
   global g1, g2, g3, g4
   global l1, l2, l3, l4
   global c
-  
+  global count
   global timesCalled, lastSubmit
+  count = 0
   timesCalled = 0
   a1 = []
   a2 = []
@@ -190,7 +191,7 @@ def submitData():
   global g1, g2, g3, g4
   global l1, l2, l3, l4
   global c
-  
+  global count
   if time.time() - lastSubmit > 1:
     lastSubmit = time.time()
     alpha = [np.mean(np.array(a1).astype(np.float)), np.mean(np.array(a2).astype(np.float)), np.mean(np.array(a3).astype(np.float)), np.mean(np.array(a4).astype(np.float))]
@@ -200,7 +201,15 @@ def submitData():
     gamma = [np.mean(np.array(g1).astype(np.float)), np.mean(np.array(g2).astype(np.float)), np.mean(np.array(g3).astype(np.float)), np.mean(np.array(g4).astype(np.float))]
     low = [np.mean(np.array(l1).astype(np.float)), np.mean(np.array(l2).astype(np.float)), np.mean(np.array(l3).astype(np.float)), np.mean(np.array(l4).astype(np.float))]
     xtest = np.concatenate((alpha, beta, delta, theta, gamma, low))
-    print(clf.predict(xtest))
+    x = clf.predict(xtest)[0]
+    print(x)
+    if (x > 0.5 and count < 10):
+        while (count < 10):
+            wsh.SendKeys("d")
+            count = count + 1
+    if (x < 0.5 and count > 0):
+        wsh.SendKeys("s")
+        count = count - 1
     #print("Channel 1-4")
     #print("Alpha:", alpha)
     #print("Beta:", beta)
@@ -267,7 +276,3 @@ def runMuseServer():
 initArrays()
 runMuseServer()
 
-wsh= comclt.Dispatch("WScript.Shell")
-wsh.AppActivate("Notepad") # select another application
-while(1):
-    wsh.SendKeys("a") # send the keys you want
